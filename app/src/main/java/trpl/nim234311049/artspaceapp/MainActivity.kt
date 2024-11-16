@@ -8,18 +8,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import trpl.nim234311049.artspaceapp.ui.theme.ArtSpaceAppTheme
@@ -42,118 +44,64 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ArtSpace() {
-    var taker by remember { mutableStateOf(1) }
+    // Daftar gambar dan informasi karya seni
+    val artworks = listOf(
+        Triple(R.drawable.mona_lisa, R.string.artwork1, R.string.artist1),
+        Triple(R.drawable.persistence_of_memory, R.string.artwork2, R.string.artist2),
+        Triple(R.drawable.starry_night, R.string.artwork3, R.string.artist3)
+    )
 
-    val imageRes = when (taker) {
-        1 -> R.drawable.mona_lisa
-        2 -> R.drawable.persistence_of_memory
-        3 -> R.drawable.starry_night
-        else -> R.drawable.ic_launcher_background
-    }
-
-    val artworkTitle = when (taker) {
-        1 -> R.string.artwork1
-        2 -> R.string.artwork2
-        3 -> R.string.artwork3
-        else -> R.string.artwork1
-    }
-
-    val artworkArtist = when (taker) {
-        1 -> R.string.artist1
-        2 -> R.string.artist2
-        3 -> R.string.artist3
-        else -> R.string.artist1
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+    // LazyColumn untuk daftar scrollable
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .size(height = 500.dp, width = 350.dp)
-                .border(BorderStroke(3.dp, Color.Gray), RectangleShape)
-                .background(Color.White)
-        ) {
-            Image(
-                painter = painterResource(imageRes),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
+        items(artworks) { artwork ->
+            Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .border(BorderStroke(2.dp, Color.LightGray), RectangleShape)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .width(300.dp)
-                .height(80.dp)
-                .background(Color(0xFFE0E0E0), shape = RectangleShape)
-                .padding(16.dp)
-        ) {
-            Text(
-                text = stringResource(artworkTitle),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-            Text(
-                text = stringResource(artworkArtist),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Gray
-            )
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(
-                onClick = {
-                    taker = if (taker > 1) taker - 1 else 3
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFa2b5d1)),
-                modifier = Modifier
-                    .size(width = 120.dp, height = 50.dp)
-                    .clip(MaterialTheme.shapes.small)
+                    .fillMaxWidth()
+                    .border(BorderStroke(3.dp, Color.Gray), RectangleShape)
+                    .background(Color.White)
             ) {
-                Text(text = "Previous")
-            }
+                // Gambar
+                Image(
+                    painter = painterResource(artwork.first),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(4f / 5f)
+                        .padding(16.dp)
+                        .border(BorderStroke(2.dp, Color.LightGray), RectangleShape)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.width(20.dp))
-
-            Button(
-                onClick = {
-                    taker = if (taker < 3) taker + 1 else 1
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFa2b5d1)),
-                modifier = Modifier
-                    .size(width = 120.dp, height = 50.dp)
-                    .clip(MaterialTheme.shapes.small)
-            ) {
-                Text(text = "Next")
+                // Informasi karya seni
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFE0E0E0), shape = RectangleShape)
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = stringResource(artwork.second),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = stringResource(artwork.third),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Gray
+                    )
+                }
             }
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ArtSpaceAppTheme {
-        ArtSpace()
     }
 }
